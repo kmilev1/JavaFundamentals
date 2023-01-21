@@ -21,7 +21,7 @@ public class FromLeftToTheRight {
                 }
                 System.out.println(sumDigits);
             } else {
-                long positive = (int) Math.abs(numbers[1]);
+                long positive = Math.abs(numbers[1]);
                 for (int j = 0; j < String.format(String.valueOf(Math.abs(numbers[1]))).length(); j++) {
                     sumDigits += Character.getNumericValue(String.valueOf(positive).charAt(j));
                 }
