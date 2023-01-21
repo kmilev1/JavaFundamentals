@@ -1,0 +1,13 @@
+import java.util.Scanner;
+
+public class ConcatNames {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String firstName = scanner.nextLine();
+        String lastName = scanner.nextLine();
+        String delimeter = scanner.nextLine();
+
+        String print = String.format("%s%s%s", firstName, delimeter, lastName);
+        System.out.println(print);
+    }
+}
