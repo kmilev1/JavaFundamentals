@@ -6,108 +6,95 @@ public class TreasureHunt {
         Scanner scanner = new Scanner(System.in);
         String[] arrayChest = scanner.nextLine().split("\\|");
 
-        String elements = "";
-        int letters = 0;
-        int countEndArray= 0;
+        String command = scanner.nextLine();
+        int counter = 0;
+        boolean isStolen = false;
 
-        boolean isNew = false;
-        boolean isElements = true;
+        while (!command.equals("Yohoho!")) {
+            String[] inputArr = command.split(" ");
 
-        while (true) {
-            String command = scanner.nextLine();
-
-            if (command.equals("Yohoho!")) {
-                break;
-            }
-
-            String[] input = command.split(" ");
-            if (input[0].equals("Loot")) {
-                for (int i = 1; i < input.length; i++) {
-                    String addWord = "";
-
+            if (inputArr[0].equals("Loot")) {
+                for (int i = 1; i < inputArr.length; i++) {
+                    boolean isPresented = true;
                     for (int j = 0; j < arrayChest.length; j++) {
-                        if (!input[i].equals(arrayChest[j])) {
-                            addWord = input[i];
-                            isNew = true;
+                        if (!inputArr[i].equals(arrayChest[j])) {
+                            isPresented = false;
                         } else {
-                            isNew = false;
+                            isPresented = true;
                             break;
                         }
                     }
-                    if (isNew) {
-                        elements = addWord + " " + String.join(" ", arrayChest);
-                        arrayChest = elements.split(" ");
-                    }
-                }
-                elements = "";
-
-            } else if (input[0].equals("Drop")) {
-                if (Integer.parseInt(input[1]) < 1) {
-                    continue;
-                }
-                String keepElement = arrayChest[Integer.parseInt(input[1])];
-                String[] newArray = new String[arrayChest.length];
-                boolean isDropped = false;
-
-                for (int i = 0; i < arrayChest.length; i++) {
-                    if (i == Integer.parseInt(input[1])) { //3==3
-                        newArray[i] = arrayChest[i + 1]; //silver (поз 4 от стария масив)
-                        isDropped = true;
-                        for (int j = i + 1; i < arrayChest.length - 1; j++) {
-                            if (j == arrayChest.length - 1) {
-                                newArray[j] = keepElement;
-                                arrayChest = newArray;
-                                break;
+                    if (!isPresented) {
+                        String[] tempArr = new String[arrayChest.length + 1];
+                        for (int j = 0; j < tempArr.length; j++) {
+                            if (j == 0) {
+                                tempArr[j] = inputArr[i];
+                            } else {
+                                tempArr[j] = arrayChest[j - 1];
                             }
-                            newArray[j] = arrayChest[j + 1];
                         }
+                        arrayChest = tempArr;
+
                     }
-                    if (isDropped) {
-                        break;
+                }
+
+            } else if (inputArr[0].equals("Drop") && Integer.parseInt(inputArr[1]) >= 0 && Integer.parseInt(inputArr[1]) <= arrayChest.length - 1) {
+
+                if ((Integer.parseInt(inputArr[1]) < 0) || Integer.parseInt(inputArr[1]) >= arrayChest.length-1) {
+                    break;
+                }
+                String keepElement = arrayChest[Integer.parseInt(inputArr[1])];
+
+                for (int j = Integer.parseInt(inputArr[1]); j < arrayChest.length; j++) {
+                    if (j == arrayChest.length-1) {
+                        arrayChest[arrayChest.length-1] = keepElement;
                     } else {
-                        newArray[i] = arrayChest[i];
+                        arrayChest[j] = arrayChest[j+1];
                     }
                 }
 
-            } else if (input[0].equals("Steal")) {
-                String[] newArray = new String[Integer.parseInt(input[1])];
-                int counter = 0;
-                for (int i = 0; i < newArray.length; i++) {
-                    newArray[i] = arrayChest[arrayChest.length - newArray.length + counter];
-                    counter++;
-                }
+            } else if (inputArr[0].equals("Steal")) {
+                String[] stolen = new String[Integer.parseInt(inputArr[1])];
 
-                String print = "";
-                String[] endArray = new String[arrayChest.length - newArray.length];
-
-                for (int i = 0; i < endArray.length; i++) {
-                    endArray[i] = arrayChest[i];
-                    countEndArray++;
-
-                    for (int j = 0; j < endArray[i].length(); j++) {
-                        letters++;
+                if (Integer.parseInt(inputArr[1]) >= 0 && arrayChest.length > Integer.parseInt(inputArr[1])) {
+                    for (int i = 0; i < stolen.length; i++) {
+                        stolen[i] = arrayChest[arrayChest.length - Integer.parseInt(inputArr[1]) + i];
                     }
-                }
+                    String printStolen = String.join(", ", stolen);
+                    System.out.println(printStolen);
 
-                for (int i = 0; i < newArray.length; i++) {
-                    if (i == newArray.length - 1) {
-                        print += newArray[i];
-                    } else {
-                        print += newArray[i] + ", ";
+                    String[] tempArr = new String[arrayChest.length - stolen.length];
+                    for (int i = 0; i < tempArr.length; i++) {
+                        tempArr[i] = arrayChest[i];
                     }
-                }
-                System.out.println(print);
+                    arrayChest = tempArr;
 
-                if (newArray.length >= arrayChest.length) {
-                    System.out.println("Failed treasure hunt.");
-                    isElements = false;
-                }
+                } else if (Integer.parseInt(inputArr[1]) >= 0) {
+                    isStolen = true;
+                    String printStolen = String.join(", ", arrayChest);
+                    System.out.println(printStolen);
+                    arrayChest = new String[0];
 
+                }
             }
+            command = scanner.nextLine();
         }
-        if (isElements) {
-            double avg = (double) letters / countEndArray;
-            System.out.printf("Average treasure gain: %.2f pirate credits.", avg);
+
+        if (!isStolen) {
+            int sumLength = 0;
+            counter = 0;
+
+            for (int i = 0; i < arrayChest.length; i++) {
+                sumLength += arrayChest[i].length();
+                counter++;
+            }
+            double calc = (double) sumLength / counter;
+
+            if (sumLength > 0) {
+                System.out.printf("Average treasure gain: %.2f pirate credits.", calc);
+            }
+        } else {
+            System.out.print("Failed treasure hunt.");
         }
     }
 }
